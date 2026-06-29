@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invictus QUEBRADAS Dashboard</title>
+    <link rel="icon" type="image/png" href="img/logo.png?v=2.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-middle" href="#">
+                <i class="fa-solid fa-soccer-ball me-2" style="color: #e66e26;"></i> 
+                INVICTUS <span style="color: #e66e26; margin-left: 5px;">QUEBRADAS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html"><i class="fa-solid fa-users me-1"></i> Plantilla</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pagos.html"><i class="fa-solid fa-credit-card me-1"></i> Pagos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventario.html"><i class="fa-solid fa-boxes-stacked me-1"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="partidos.html"><i class="fa-solid fa-clipboard-list me-1"></i> Partidos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold m-0 text-dark">⚽ Plantilla Oficial</h1>
+                <p class="text-muted m-0">Monitoreo y administración de futbolistas en tiempo real.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button class="btn fw-bold shadow-sm" style="background-color: #e66e26; color: white;" onclick="abrirModalCrear()">
+                    <i class="fa-solid fa-user-plus me-2"></i> Nuevo Jugador
+                </button>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="card shadow-sm p-3 bg-white" style="border-left: 5px solid #1a1a1a;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted fw-bold text-uppercase small m-0">Total Plantilla</h6>
+                            <h3 class="fw-bold m-0 mt-1" id="total-jugadores">0</h3>
+                        </div>
+                        <div class="p-3 bg-light rounded-circle text-dark">
+                            <i class="fa-solid fa-users fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="card shadow-sm p-3 bg-white" style="border-left: 5px solid #28a745;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted fw-bold text-uppercase small m-0">Jugadores Activos</h6>
+                            <h3 class="fw-bold m-0 mt-1 text-success" id="activos-jugadores">0</h3>
+                        </div>
+                        <div class="p-3 rounded-circle text-success" style="background-color: #e8f5e9;">
+                            <i class="fa-solid fa-circle-check fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 bg-white" style="border-left: 5px solid #dc3545;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted fw-bold text-uppercase small m-0">En Enfermería</h6>
+                            <h3 class="fw-bold m-0 mt-1 text-danger" id="lesionados-jugadores">0</h3>
+                        </div>
+                        <div class="p-3 rounded-circle text-danger" style="background-color: #fde8e8;">
+                            <i class="fa-solid fa-user-injured fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-8 mb-2 mb-md-0">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="buscar-nombre" class="form-control border-start-0" placeholder="Buscar jugador por nombre..." oninput="filtrarTabla()">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select id="filtrar-posicion" class="form-select shadow-sm" onchange="filtrarTabla()">
+                    <option value="TODAS">Todas las posiciones</option>
+                    <option value="Portero">Portero</option>
+                    <option value="Defensa">Defensa</option>
+                    <option value="Mediocampista">Mediocampista</option>
+                    <option value="Delantero">Delantero</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col" class="ps-3">N°</th>
+                                        <th scope="col">Jugador</th>
+                                        <th scope="col">Número</th>
+                                        <th scope="col">Posición</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-jugadores">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                            Cargando lista de jugadores...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Único para Crear y Editar -->
+    <div class="modal fade" id="modalJugador" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header text-white" style="background-color: #1a1a1a; border-bottom: 3px solid #e66e26;">
+                    <h5 class="modal-title fw-bold" id="modalJugadorLabel">Registrar Nuevo Jugador</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-jugador">
+                        <input type="hidden" id="jugador-id">
+                        
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold small text-muted">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Ej: Celso Borges" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="numero" class="form-label fw-bold small text-muted">Número de Camisa</label>
+                                <input type="number" class="form-control" id="numero" placeholder="Ej: 5" min="1" max="99" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="posicion" class="form-label fw-bold small text-muted">Posición</label>
+                                <select class="form-select" id="posicion" required>
+                                    <option value="" selected disabled>Seleccionar...</option>
+                                    <option value="Portero">Portero</option>
+                                    <option value="Defensa">Defensa</option>
+                                    <option value="Mediocampista">Mediocampista</option>
+                                    <option value="Delantero">Delantero</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="estado" class="form-label fw-bold small text-muted">Estado Inicial</label>
+                            <select class="form-select" id="estado" required>
+                                <option value="Activo" selected>Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                                <option value="Lesionado">Lesionado</option>
+                            </select>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-light fw-bold me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" id="btn-guardar" class="btn fw-bold text-white" style="background-color: #e66e26;">Guardar Jugador</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let listaJugadores = []; 
+        const API_URL = 'http://host.docker.internal:3000/api/jugadores';
+        const modalBootstrap = new bootstrap.Modal(document.getElementById('modalJugador'));
+
+        async function cargarJugadores() {
+            try {
+                const respuesta = await fetch(API_URL);
+                const resultado = await respuesta.json();
+
+                if (resultado.success && resultado.data.length > 0) {
+                    listaJugadores = resultado.data;
+                    let total = resultado.data.length;
+                    let activos = 0;
+                    let lesionados = 0;
+
+                    resultado.data.forEach(jugador => {
+                        if (jugador.estado === 'Activo') activos++;
+                        if (jugador.estado === 'Lesionado') lesionados++;
+                    });
+
+                    document.getElementById('total-jugadores').innerText = total;
+                    document.getElementById('activos-jugadores').innerText = activos;
+                    document.getElementById('lesionados-jugadores').innerText = lesionados;
+
+                    filtrarTabla();
+                } else {
+                    document.getElementById('tabla-jugadores').innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay jugadores registrados.</td></tr>`;
+                }
+            } catch (error) {
+                console.error("Error al obtener los datos de la API:", error);
+                document.getElementById('tabla-jugadores').innerHTML = `
+                    <tr><td colspan="6" class="text-center text-danger fw-bold">Error de conexión con el servidor</td></tr>
+                `;
+            }
+        }
+
+        function filtrarTabla() {
+            const textoBusqueda = document.getElementById('buscar-nombre').value.toLowerCase();
+            const posicionSeleccionada = document.getElementById('filtrar-posicion').value;
+            const tbody = document.getElementById('tabla-jugadores');
+            
+            tbody.innerHTML = '';
+
+            const jugadoresFiltrados = listaJugadores.filter(jugador => {
+                const coincideNombre = jugador.nombre.toLowerCase().includes(textoBusqueda);
+                const coincidePosicion = (posicionSeleccionada === 'TODAS') || (jugador.posicion === posicionSeleccionada);
+                return coincideNombre && coincidePosicion;
+            });
+
+            if (jugadoresFiltrados.length > 0) {
+                jugadoresFiltrados.forEach((jugador, index) => {
+                    let badgeColor = 'bg-success';
+                    if (jugador.estado === 'Lesionado') badgeColor = 'bg-danger';
+                    if (jugador.estado === 'Inactivo') badgeColor = 'bg-secondary';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold ps-3">${index + 1}</td>
+                            <td>
+                                <i class="fa-solid fa-user text-muted me-2"></i><strong>${jugador.nombre}</strong>
+                            </td>
+                            <td><span class="badge bg-light text-dark border fw-bold"># ${jugador.numero_camisa || 'N/A'}</span></td>
+                            <td><i class="fa-solid fa-shield-halved text-primary me-1"></i> ${jugador.posicion}</td>
+                            <td><span class="badge ${badgeColor}">${jugador.estado}</span></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-dark me-1" onclick="abrirModalEditar(${jugador.id})">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${jugador.id}, '${jugador.nombre}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No se encontraron jugadores con los filtros aplicados.</td></tr>`;
+            }
+        }
+
+      function abrirModalCrear() {
+            document.getElementById('form-jugador').reset();
+            document.getElementById('jugador-id').value = '';
+            document.getElementById('modalJugadorLabel').innerText = 'Registrar Nuevo Jugador';
+            document.getElementById('btn-guardar').innerText = 'Guardar Jugador';
+            modalBootstrap.show();
+        }
+
+        function abrirModalEditar(id) {
+            const jugador = listaJugadores.find(j => j.id === id);
+            if (!jugador) return;
+
+            document.getElementById('jugador-id').value = jugador.id;
+            document.getElementById('nombre').value = jugador.nombre;
+            document.getElementById('numero').value = jugador.numero_camisa;
+            document.getElementById('posicion').value = jugador.posicion;
+            document.getElementById('estado').value = jugador.estado;
+
+            document.getElementById('modalJugadorLabel').innerText = 'Editar Datos de ' + jugador.nombre;
+            document.getElementById('btn-guardar').innerText = 'Actualizar Cambios';
+            modalBootstrap.show();
+        }
+
+        document.getElementById('form-jugador').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('jugador-id').value;
+            const datosJugador = {
+                nombre: document.getElementById('nombre').value,
+                numero_camisa: parseInt(document.getElementById('numero').value),
+                posicion: document.getElementById('posicion').value,
+                estado: document.getElementById('estado').value
+            };
+
+            const esEditar = id !== '';
+            const url = esEditar ? `${API_URL}/${id}` : API_URL;
+            const metodo = esEditar ? 'PUT' : 'POST';
+
+            try {
+                const respuesta = await fetch(url, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosJugador)
+                });
+
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+                    Swal.fire({
+                        title: esEditar ? 'Cambios Guardados' : 'Fichaje Registrado',
+                        text: esEditar ? 'Los datos del jugador fueron actualizados con éxito.' : 'El jugador ha sido agregado correctamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#e66e26'
+                    });
+                    
+                    modalBootstrap.hide();
+                    cargarJugadores();
+                } else {
+                    Swal.fire({ title: 'Error', text: resultado.mensaje, icon: 'error', confirmButtonColor: '#1a1a1a' });
+                }
+            } catch (error) {
+                console.error('Error en la operación:', error);
+                Swal.fire({ title: 'Error', text: 'Problemas de comunicación con el servidor.', icon: 'warning', confirmButtonColor: '#1a1a1a' });
+            }
+        });
+
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `Vas a dar de baja a ${nombre} de la plantilla oficial. Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const respuesta = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                        const resultado = await respuesta.json();
+
+                        if (resultado.success) {
+                            Swal.fire({
+                                title: 'Eliminado',
+                                text: 'El jugador ha sido removido del sistema.',
+                                icon: 'success',
+                                confirmButtonColor: '#e66e26'
+                            });
+                            cargarJugadores();
+                        }
+                    } catch (error) {
+                        Swal.fire({ title: 'Error', text: 'No se pudo completar la solicitud.', icon: 'error' });
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarJugadores);
+    </script>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5 border-top" style="border-color: #e66e26 !important;">
+        <div class="container">
+            <p class="m-0 small fw-bold">
+                © 2026 INVICTUS <span style="color: #e66e26;">QUEBRADAS</span>. Todos los derechos reservados.
+            </p>
+            <p class="m-0" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);">
+                Desarrollado para el monitoreo deportivo y financiero.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

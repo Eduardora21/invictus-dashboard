@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invictus QUEBRADAS - Partidos y Alineaciones</title>
+    <link rel="icon" type="image/png" href="img/logo.png?v=2.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --invictus-orange: #e66e26;
+            --invictus-dark: #1a1a1a;
+            --invictus-gray: #2d2d2d;
+            --invictus-light: #f8f9fa;
+        }
+
+        body { 
+            background-color: #f0f2f5; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+
+        /* NAVBAR */
+        nav.navbar { 
+            background-color: var(--invictus-dark) !important;
+            border-bottom: 3px solid var(--invictus-orange) !important;
+        }
+
+        nav.navbar .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav.navbar .navbar-nav .nav-link:hover, 
+        nav.navbar .navbar-nav .nav-link.active {
+            color: var(--invictus-orange) !important;
+        }
+
+        h1 {
+            color: var(--invictus-dark);
+        }
+
+        .card {
+            border-radius: 12px;
+            border: none;
+        }
+
+        /* LISTA DE PARTIDOS */
+        .partido-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .partido-item:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .partido-item.active {
+            background-color: var(--invictus-dark) !important;
+            color: white !important;
+            border-left-color: var(--invictus-orange) !important;
+        }
+
+        /* CANCHA DE FÚTBOL TÁCTICA */
+        .cancha-contenedor {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 450px;
+            background-color: #2e7d32;
+            border: 4px solid #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 auto 15px auto;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* Líneas del campo */
+        .linea-medio {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .circulo-central {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90px;
+            height: 90px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .area-grande-arriba {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 160px;
+            height: 60px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-top: none;
+            transform: translateX(-50%);
+        }
+
+        .area-grande-abajo {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 160px;
+            height: 60px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-bottom: none;
+            transform: translateX(-50%);
+        }
+
+        /*  FICHAS CIRCULARES DE JUGADORES */
+        .ficha-jugador {
+            width: 52px;
+            height: 52px;
+            background-color: var(--invictus-dark);
+            border: 2px solid var(--invictus-orange);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, left 0.5s ease-in-out, top 0.5s ease-in-out;
+        }
+
+        .cancha-contenedor .ficha-jugador {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .cancha-contenedor .ficha-jugador:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .ficha-numero {
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1;
+            color: var(--invictus-orange);
+        }
+
+        .ficha-nombre {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            max-width: 46px;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            white-space: nowrap;
+            line-height: 1.1;
+            margin-top: 1px;
+        }
+
+        /* CONTENEDOR DE LA BANCA */
+        .banca-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .banca-box .ficha-jugador {
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+        }
+
+        .banca-box .ficha-jugador:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-middle" href="#">
+                <i class="fa-solid fa-soccer-ball me-2" style="color: var(--invictus-orange);"></i> 
+                INVICTUS <span style="color: var(--invictus-orange); margin-left: 5px;">QUEBRADAS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-users me-1"></i> Plantilla</a></li>
+                    <li class="nav-item"><a class="nav-link" href="pagos.html"><i class="fa-solid fa-credit-card me-1"></i> Pagos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="inventario.html"><i class="fa-solid fa-boxes-stacked me-1"></i> Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="partidos.html"><i class="fa-solid fa-clipboard-list me-1"></i> Partidos</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1 class="fw-bold m-0">📋 Gestión de Partidos y Estrategia</h1>
+                <p class="text-muted m-0">Organizá los encuentros del club y armá la alineación táctica visual en tiempo real.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header text-white fw-bold" style="background-color: var(--invictus-dark);">🗓️ Programar Nuevo Partido</div>
+                    <div class="card-body">
+                        <form id="form-partido">
+                            <div class="mb-2">
+                                <label class="small fw-bold text-muted">Rival</label>
+                                <input type="text" id="rival" class="form-control form-control-sm" placeholder="Ej: Deportivo Moravia" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <label class="small fw-bold text-muted">Fecha y Hora</label>
+                                    <input type="datetime-local" id="fecha" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <label class="small fw-bold text-muted">Lugar / Cancha</label>
+                                    <input type="text" id="lugar" class="form-control form-control-sm" placeholder="Ej: Plaza El River" required>
+                                </div>
+                            </div>
+                            <div class="text-end mt-2">
+                                <button type="submit" class="btn btn-sm text-white fw-bold" style="background-color: var(--invictus-orange);"><i class="fa-solid fa-plus me-1"></i> Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header text-white fw-bold" style="background-color: var(--invictus-dark);">⚽ Roles de Partidos Registrados</div>
+                    <div class="list-group list-group-flush" id="lista-partidos" style="max-height: 480px; overflow-y: auto;">
+                        </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 text-center">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: var(--invictus-dark);">
+                        <span class="fw-bold m-0" id="titulo-pizarra">📋 Pizarra Táctica (Seleccioná un partido)</span>
+                        <div class="d-flex gap-2">
+                            <select id="selector-formacion" class="form-select form-select-sm d-none" style="width: auto;" onchange="aplicarFormacionDinamica(this.value)">
+                                <option value="" disabled selected>📐 Formación</option>
+                                <option value="4-4-2">4-4-2 (Clásica Tradicional)</option>
+                                <option value="4-3-3">4-3-3 (Ofensiva Amplia)</option>
+                                <option value="3-5-2">3-5-2 (Dominio del Medio)</option>
+                                <option value="4-2-3-1">4-2-3-1 (Equilibrio Moderno)</option>
+                                <option value="5-4-1">5-4-1 (Muralla Defensiva)</option>
+                                <option value="3-4-3">3-4-3 (Ataque Total)</option>
+                            </select>
+                            <button id="btn-guardar-tactica" class="btn btn-sm btn-success fw-bold d-none" onclick="guardarAlineacionServidor()">
+                                <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Táctica
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        
+                        <div id="cancha" class="cancha-contenedor d-none" ondragover="allowDrop(event)" ondrop="dropInCancha(event)">
+                            <div class="linea-medio"></div>
+                            <div class="circulo-central"></div>
+                            <div class="area-grande-arriba"></div>
+                            <div class="area-grande-abajo"></div>
+                        </div>
+
+                        <div id="panel-convocatoria" class="mt-3 text-start d-none">
+                            <h6 class="fw-bold text-muted small"><i class="fa-solid fa-reply-all"></i> Jugadores Disponibles (Arrastralos a la cancha):</h6>
+                            <div id="banca" class="banca-box" ondragover="allowDrop(event)" ondrop="dropInBanca(event)">
+                                </div>
+                        </div>
+
+                        <div id="aviso-inicial" class="py-5 text-muted">
+                            <i class="fa-solid fa-hand-pointer fa-3x mb-3 text-muted"></i>
+                            <h5>Ningún partido seleccionado</h5>
+                            <p class="small">Dale clic a un partido del rol de la izquierda para desplegar la cancha táctica.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_PARTIDOS = 'http://host.docker.internal:3000/api/partidos';
+        const API_JUGADORES = 'http://host.docker.internal:3000/api/jugadores';
+        
+        let partidoSeleccionadoId = null;
+        let todosLosJugadores = [];
+
+        // Coordenadas fijas ordenadas desde la portería (index 0) hacia el ataque (último index)
+        const BASE_FORMACIONES = {
+            "4-4-2": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "68%", left: "15%" }, { top: "70%", left: "38%" }, { top: "70%", left: "62%" }, { top: "68%", left: "85%" }, // Defensas
+                { top: "40%", left: "15%" }, { top: "45%", left: "38%" }, { top: "45%", left: "62%" }, { top: "40%", left: "85%" }, // Mediocampistas
+                { top: "15%", left: "35%" }, { top: "15%", left: "65%" }  // Delanteros
+            ],
+            "4-3-3": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "68%", left: "15%" }, { top: "70%", left: "38%" }, { top: "70%", left: "62%" }, { top: "68%", left: "85%" }, // Defensas
+                { top: "45%", left: "25%" }, { top: "48%", left: "50%" }, { top: "45%", left: "75%" }, // Mediocampistas
+                { top: "15%", left: "15%" }, { top: "12%", left: "50%" }, { top: "15%", left: "85%" }  // Delanteros
+            ],
+            "3-5-2": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "70%", left: "25%" }, { top: "72%", left: "50%" }, { top: "70%", left: "75%" }, // Defensas
+                { top: "45%", left: "12%" }, { top: "48%", left: "35%" }, { top: "52%", left: "50%" }, { top: "48%", left: "65%" }, { top: "45%", left: "88%" }, // Mediocampistas
+                { top: "15%", left: "35%" }, { top: "15%", left: "65%" }  // Delanteros
+            ],
+            "4-2-3-1": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "68%", left: "15%" }, { top: "70%", left: "38%" }, { top: "70%", left: "62%" }, { top: "68%", left: "85%" }, // Defensas
+                { top: "52%", left: "35%" }, { top: "52%", left: "65%" }, // Mediocampistas (Pivotes)
+                { top: "32%", left: "20%" }, { top: "30%", left: "50%" }, { top: "32%", left: "80%" }, // Mediocampistas (Mediapuntas)
+                { top: "12%", left: "50%" }  // Delantero
+            ],
+            "5-4-1": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "70%", left: "12%" }, { top: "72%", left: "32%" }, { top: "74%", left: "50%" }, { top: "72%", left: "68%" }, { top: "70%", left: "88%" }, // Defensas
+                { top: "45%", left: "15%" }, { top: "48%", left: "38%" }, { top: "48%", left: "62%" }, { top: "45%", left: "85%" }, // Mediocampistas
+                { top: "15%", left: "50%" }  // Delantero
+            ],
+            "3-4-3": [
+                { top: "88%", left: "50%" }, // Portero
+                { top: "70%", left: "25%" }, { top: "72%", left: "50%" }, { top: "70%", left: "75%" }, // Defensas
+                { top: "45%", left: "15%" }, { top: "45%", left: "38%" }, { top: "45%", left: "62%" }, { top: "45%", left: "85%" }, // Mediocampistas
+                { top: "15%", left: "20%" }, { top: "12%", left: "50%" }, { top: "15%", left: "80%" }  // Delanteros
+            ]
+        };
+
+        // Ponderación numérica fija de prioridad según la posición del jugador
+        const RANGOS_POSICION = {
+            "Portero": 1,
+            "Defensa": 2,
+            "Mediocampista": 3,
+            "Delantero": 4
+        };
+
+        async function inicializar() {
+            try {
+                const resJ = await fetch(API_JUGADORES);
+                const dataJ = await resJ.json();
+                
+                // Mapeamos los datos y adjuntamos su posición nativa tal como viene del backend
+                if (dataJ.success) {
+                    todosLosJugadores = dataJ.data.filter(j => j.estado === 'Activo').map(j => ({
+                        id: j.id,
+                        nombre: j.nombre,
+                        numero_camisa: j.numero_camisa,
+                        posicion: j.posicion || "Mediocampista" 
+                    }));
+                }
+                cargarPartidos();
+            } catch (e) { console.error(e); }
+        }
+
+        async function cargarPartidos() {
+            try {
+                const res = await fetch(API_PARTIDOS);
+                const data = await res.json();
+                const lista = document.getElementById('lista-partidos');
+                lista.innerHTML = '';
+
+                if (data.success && data.data.length > 0) {
+                    data.data.forEach(p => {
+                        let badgeColor = 'bg-secondary'; 
+                        if (p.resultado === 'Ganado') badgeColor = 'bg-success'; 
+                        if (p.resultado === 'Perdido') badgeColor = 'bg-danger'; 
+                        if (p.resultado === 'Empatado') badgeColor = 'bg-warning text-dark'; 
+
+                        lista.innerHTML += `
+                            <div id="tarjeta-partido-${p.id}" class="list-group-item partido-item p-3 text-start border-bottom d-flex flex-column justify-content-between ${partidoSeleccionadoId === p.id ? 'active' : ''}" style="cursor: pointer;" onclick="seleccionarPartido(${p.id}, '${p.rival}')">
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong class="text-uppercase text-truncate" style="max-width: 70%;">${p.rival}</strong>
+                                        <span class="badge ${badgeColor} small">${p.resultado}</span>
+                                    </div>
+                                    <div class="small text-muted mb-2">
+                                        <i class="fa-solid fa-calendar-days me-1"></i> ${p.fecha_partido} | <i class="fa-solid fa-location-dot me-1"></i> ${p.lugar}
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2" onclick="event.stopPropagation()">
+                                    <select class="form-select form-select-sm w-50" onchange="cambiarResultado(${p.id}, this.value)">
+                                        <option value="Por jugar" ${p.resultado === 'Por jugar' ? 'selected' : ''}>⏳ Por jugar</option>
+                                        <option value="Ganado" ${p.resultado === 'Ganado' ? 'selected' : ''}>✅ Ganado</option>
+                                        <option value="Empatado" ${p.resultado === 'Empatado' ? 'selected' : ''}>🤝 Empatado</option>
+                                        <option value="Perdido" ${p.resultado === 'Perdido' ? 'selected' : ''}>❌ Perdido</option>
+                                    </select>
+                                    <button onclick="eliminarPartido(${p.id}, '${p.rival}', event)" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center" style="width: 32px; height: 31px;">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    lista.innerHTML = '<div class="p-3 text-muted text-center small">No hay partidos agendados.</div>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('form-partido').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                rival: document.getElementById('rival').value,
+                fecha_partido: document.getElementById('fecha').value,
+                lugar: document.getElementById('lugar').value
+            };
+            try {
+                const res = await fetch(API_PARTIDOS, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire('¡Partido Agendado!', 'El encuentro se registró con éxito', 'success');
+                    document.getElementById('form-partido').reset();
+                    cargarPartidos();
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        async function seleccionarPartido(id, rival) {
+            try {
+                partidoSeleccionadoId = id;
+                
+                document.querySelectorAll('.partido-item').forEach(el => el.classList.remove('active'));
+                const tarjetaElegida = document.getElementById(`tarjeta-partido-${id}`);
+                if (tarjetaElegida) tarjetaElegida.classList.add('active');
+
+                document.getElementById('aviso-inicial').classList.add('d-none');
+                document.getElementById('cancha').classList.remove('d-none');
+                document.getElementById('panel-convocatoria').classList.remove('d-none');
+                document.getElementById('btn-guardar-tactica').classList.remove('d-none');
+                
+                const selectorFormacion = document.getElementById('selector-formacion');
+                selectorFormacion.classList.remove('d-none');
+                selectorFormacion.value = ""; 
+
+                document.getElementById('titulo-pizarra').innerText = `⚽ Alineación vs ${rival}`;
+
+                const cancha = document.getElementById('cancha');
+                document.querySelectorAll('.cancha-contenedor .ficha-jugador').forEach(f => f.remove());
+
+                let alineacionGuardada = [];
+                try {
+                    const res = await fetch(`${API_PARTIDOS}/${id}/alineacion`);
+                    const dataAlineacion = await res.json();
+                    if (dataAlineacion.success && dataAlineacion.data) {
+                        alineacionGuardada = dataAlineacion.data;
+                    }
+                } catch (errAlineacion) {
+                    console.warn("No se encontró alineación previa.", errAlineacion);
+                }
+
+                const banca = document.getElementById('banca');
+                banca.innerHTML = '';
+
+                if (todosLosJugadores.length === 0) {
+                    banca.innerHTML = '<div class="text-muted small p-2">No hay jugadores activos en la planilla.</div>';
+                    return;
+                }
+
+                todosLosJugadores.forEach(jugador => {
+                    const guardado = alineacionGuardada.find(a => Number(a.jugador_id) === Number(jugador.id));
+                    
+                    const ficha = document.createElement('div');
+                    ficha.className = 'ficha-jugador';
+                    ficha.id = `jugador-${jugador.id}`;
+                    ficha.draggable = true;
+                    ficha.setAttribute('ondragstart', 'drag(event)');
+                    // Guardamos la posición del jugador en un atributo HTML para el ordenamiento dinámico
+                    ficha.setAttribute('data-posicion', jugador.posicion);
+                    ficha.innerHTML = `
+                        <span class="ficha-numero">${jugador.numero_camisa || '?'}</span>
+                        <span class="ficha-nombre">${jugador.nombre.split(' ')[0]}</span>
+                    `;
+
+                    if (guardado && guardado.posicion_x !== undefined && guardado.posicion_y !== undefined) {
+                        ficha.style.left = `${guardado.posicion_x}%`;
+                        ficha.style.top = `${guardado.posicion_y}%`;
+                        cancha.appendChild(ficha);
+                    } else {
+                        banca.appendChild(ficha);
+                    }
+                });
+
+            } catch (e) { console.error(e); }
+        }
+
+        function aplicarFormacionDinamica(codigoFormacion) {
+            const coordenadas = BASE_FORMACIONES[codigoFormacion];
+            if (!coordenadas) return;
+
+            const cancha = document.getElementById('cancha');
+            const banca = document.getElementById('banca');
+            
+            const fichasEnCancha = Array.from(cancha.querySelectorAll('.ficha-jugador'));
+            const fichasEnBanca = Array.from(banca.querySelectorAll('.ficha-jugador'));
+            const todasLasFichas = [...fichasEnCancha, ...fichasEnBanca];
+
+            if (todasLasFichas.length < 11) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Faltan jugadores',
+                    text: `Se necesitan mínimo 11 jugadores activos para armar la formación táctica completa.`,
+                });
+                document.getElementById('selector-formacion').value = "";
+                return;
+            }
+
+            // ⚡ AQUÍ ESTÁ EL TRUCO: Ordenamos los elementos por su rol (Portero -> Defensa -> Medio -> Delantero)
+            todasLasFichas.sort((a, b) => {
+                const posA = a.getAttribute('data-posicion') || "Mediocampista";
+                const posB = b.getAttribute('data-posicion') || "Mediocampista";
+                return (RANGOS_POSICION[posA] || 3) - (RANGOS_POSICION[posB] || 3);
+            });
+
+            const titulares = todasLasFichas.slice(0, 11);
+            const suplentes = todasLasFichas.slice(11);
+
+            // Se asignan las coordenadas de forma ordenada y correcta según su rol
+            titulares.forEach((ficha, index) => {
+                const posicionEstrategica = coordenadas[index];
+                ficha.style.left = posicionEstrategica.left;
+                ficha.style.top = posicionEstrategica.top;
+                if (ficha.parentElement.id !== 'cancha') cancha.appendChild(ficha);
+            });
+
+            suplentes.forEach(ficha => {
+                if (ficha.parentElement.id !== 'banca') banca.appendChild(ficha);
+            });
+        }
+
+        async function eliminarPartido(id, rival, event) {
+            event.stopPropagation(); 
+            const conConfirmacion = await Swal.fire({
+                title: `¿Eliminar partido contra ${rival}?`,
+                text: "Se borrará el registro de forma permanente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, borrar'
+            });
+
+            if (conConfirmacion.isConfirmed) {
+                try {
+                    const res = await fetch(`${API_PARTIDOS}/${id}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.success) {
+                        if (partidoSeleccionadoId === id) {
+                            partidoSeleccionadoId = null;
+                            document.getElementById('aviso-inicial').classList.remove('d-none');
+                            document.getElementById('cancha').classList.add('d-none');
+                            document.getElementById('panel-convocatoria').classList.add('d-none');
+                            document.getElementById('btn-guardar-tactica').classList.add('d-none');
+                            document.getElementById('selector-formacion').classList.add('d-none');
+                        }
+                        cargarPartidos();
+                    }
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        async function cambiarResultado(id, nuevoResultado) {
+            try {
+                await fetch(`${API_PARTIDOS}/${id}/resultado`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ resultado: nuevoResultado })
+                });
+                cargarPartidos(); 
+            } catch (e) { console.error(e); }
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
+        function dropInCancha(ev) {
+            ev.preventDefault();
+            const idData = ev.dataTransfer.getData("text");
+            const ficha = document.getElementById(idData);
+            const cancha = document.getElementById('cancha');
+
+            const rect = cancha.getBoundingClientRect();
+            let pctX = ((ev.clientX - rect.left) / rect.width) * 100;
+            let pctY = ((ev.clientY - rect.top) / rect.height) * 100;
+
+            if (pctX < 6) pctX = 6; if (pctX > 94) pctX = 94;
+            if (pctY < 6) pctY = 6; if (pctY > 94) pctY = 94;
+
+            ficha.style.left = `${pctX}%`;
+            ficha.style.top = `${pctY}%`;
+            cancha.appendChild(ficha);
+        }
+
+        function dropInBanca(ev) {
+            ev.preventDefault();
+            const idData = ev.dataTransfer.getData("text");
+            document.getElementById('banca').appendChild(document.getElementById(idData));
+        }
+
+        async function guardarAlineacionServidor() {
+            if (!partidoSeleccionadoId) return;
+            const fichasEnCancha = document.getElementById('cancha').querySelectorAll('.ficha-jugador');
+            const listaPayload = [];
+
+            fichasEnCancha.forEach(ficha => {
+                listaPayload.push({
+                    jugador_id: parseInt(ficha.id.replace('jugador-', '')),
+                    es_titular: true,
+                    posicion_x: parseInt(ficha.style.left),
+                    posicion_y: parseInt(ficha.style.top),
+                    posicion_nombre: 'Posicionado'
+                });
+            });
+
+            try {
+                const res = await fetch(`${API_PARTIDOS}/${partidoSeleccionadoId}/alineacion`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ jugadores: listaPayload })
+                });
+                const data = await res.json();
+                if (data.success) Swal.fire('¡Estrategia Guardada!', 'Alineación almacenada con éxito.', 'success');
+            } catch (e) { console.error(e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', inicializar);
+    </script>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5 border-top" style="border-color: var(--invictus-orange) !important;">
+        <div class="container">
+            <p class="m-0 small fw-bold">© 2026 INVICTUS <span style="color: var(--invictus-orange);">QUEBRADAS</span>. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

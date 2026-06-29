@@ -1,0 +1,204 @@
+/* ==========================================================================
+   🎨 CONFIGURACIÓN GENERAL Y COLORES OFICIALES
+   ========================================================================== */
+:root {
+    --invictus-orange: #e66e26;
+    --invictus-dark: #1a1a1a;
+    --invictus-gray: #2d2d2d;
+    --invictus-light: #f8f9fa;
+}
+
+body { 
+    background-color: #f0f2f5; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+/* NAVBAR: Color oscuro de fondo y borde inferior naranja */
+nav.navbar { 
+    background-color: var(--invictus-dark) !important;
+    border-bottom: 3px solid var(--invictus-orange) !important;
+}
+
+/* ENLACES DEL MENÚ: Blanco para los textos por defecto */
+nav.navbar .navbar-nav .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* EFECTO HOVER Y ACTIVO: Cambia al naranja del logo */
+nav.navbar .navbar-nav .nav-link:hover, 
+nav.navbar .navbar-nav .nav-link.active {
+    color: var(--invictus-orange) !important;
+}
+
+/* Encabezados y tarjetas */
+h1 {
+    color: var(--invictus-dark);
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+/* TABLA: Estilo Invictus */
+.table-dark {
+    background-color: var(--invictus-dark) !important;
+    border-bottom: 2px solid var(--invictus-orange) !important;
+}
+
+
+/* ==========================================================================
+   📌 MÓDULO DE PARTIDOS Y PIZARRA TÁCTICA
+   ========================================================================== */
+
+/* Estado activo para el partido seleccionado en la lista lateral */
+.partido-item {
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.partido-item:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+.partido-item.active {
+    background-color: var(--invictus-dark) !important;
+    color: white !important;
+    border-left-color: var(--invictus-orange) !important;
+}
+
+/* 🏟️ CANCHA DE FÚTBOL */
+.cancha-contenedor {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 450px;
+    background-color: #2e7d32; /* Verde Césped */
+    border: 4px solid #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0 auto 15px auto;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* Líneas divisorias del campo */
+.linea-medio {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.circulo-central {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90px;
+    height: 90px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.area-grande-arriba {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 160px;
+    height: 60px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-top: none;
+    transform: translateX(-50%);
+}
+
+.area-grande-abajo {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 160px;
+    height: 60px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-bottom: none;
+    transform: translateX(-50%);
+}
+
+/* ⚽ FICHAS CIRCULARES DE LOS JUGADORES */
+.ficha-jugador {
+    width: 52px;
+    height: 52px;
+    background-color: var(--invictus-dark);
+    border: 2px solid var(--invictus-orange);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+    /* EFECTO TRANSICIÓN: Maneja el deslizamiento suave al cambiar de formación */
+    transition: transform 0.1s ease, box-shadow 0.1s ease, left 0.5s ease-in-out, top 0.5s ease-in-out;
+}
+
+/* Posicionamiento centralizado preciso dentro de la cancha */
+.cancha-contenedor .ficha-jugador {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.cancha-contenedor .ficha-jugador:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Contenidos de texto dentro del círculo */
+.ficha-numero {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1;
+    color: var(--invictus-orange);
+}
+
+.ficha-nombre {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    max-width: 46px;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+    line-height: 1.1;
+    margin-top: 1px;
+}
+
+/* 🔄 PANEL DE LA BANCA (CONTENEDOR) */
+.banca-box {
+    background-color: #f8f9fa;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 80px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Modificación automática de fichas cuando regresan a la banca */
+.banca-box .ficha-jugador {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+.banca-box .ficha-jugador:active {
+    cursor: grabbing;
+    transform: scale(1.1);
+}

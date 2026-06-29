@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invictus QUEBRADAS - Inventario</title>
+    <link rel="icon" type="image/png" href="img/logo.png?v=2.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-middle" href="index.html">
+                <i class="fa-solid fa-soccer-ball me-2" style="color: #e66e26;"></i> 
+                INVICTUS <span style="color: #e66e26; margin-left: 5px;">QUEBRADAS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fa-solid fa-users me-1"></i> Plantilla</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pagos.html"><i class="fa-solid fa-credit-card me-1"></i> Pagos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="inventario.html"><i class="fa-solid fa-boxes-stacked me-1"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="partidos.html"><i class="fa-solid fa-clipboard-list me-1"></i> Partidos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold m-0 text-dark">📦 Control de Inventario</h1>
+                <p class="text-muted m-0">Monitoreo de utilería, balones e implementos deportivos del club.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button class="btn fw-bold shadow-sm" style="background-color: #e66e26; color: white;" onclick="abrirModalCrear()">
+                    <i class="fa-solid fa-plus me-2"></i> Nuevo Artículo
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col" class="ps-3">ID</th>
+                                        <th scope="col">Artículo / Equipo</th>
+                                        <th scope="col" class="text-center">Cantidad Total</th>
+                                        <th scope="col" class="text-center">En Buen Estado</th>
+                                        <th scope="col" class="text-center">Dañados / Faltantes</th>
+                                        <th scope="col">Notas / Detalles</th>
+                                        <th scope="col" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-inventario">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                            Cargando inventario...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="modalInventario" tabindex="-1" aria-labelledby="modalInventarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header text-white" style="background-color: #1a1a1a; border-bottom: 3px solid #e66e26;">
+                    <h5 class="modal-title fw-bold" id="modalInventarioLabel">📝 Agregar Artículo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-inventario">
+                        <input type="hidden" id="articulo-id">
+                        
+                        <div class="mb-3">
+                            <label for="articulo" class="form-label fw-bold small text-muted">Nombre del Artículo</label>
+                            <input type="text" class="form-control" id="articulo" placeholder="Ej: Balones Mitre N°5, Chalecos Naranjas" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="cantidad_total" class="form-label fw-bold small text-muted">Cantidad Total</label>
+                                <input type="number" class="form-control" id="cantidad_total" placeholder="0" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cantidad_buen_estado" class="form-label fw-bold small text-muted">En Buen Estado</label>
+                                <input type="number" class="form-control" id="cantidad_buen_estado" placeholder="0" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notas" class="form-label fw-bold small text-muted">Notas Adicionales (Opcional)</label>
+                            <textarea class="form-control" id="notas" rows="3" placeholder="Ej: Talla M, ocupan inflarse, guardados en el casillero b..."></textarea>
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-light fw-bold me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" id="btn-guardar" class="btn fw-bold text-white" style="background-color: #e66e26;">Guardar Artículo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let listaInventario = [];
+        const API_INVENTARIO = 'http://host.docker.internal:3000/api/inventario';
+        const modalBootstrap = new bootstrap.Modal(document.getElementById('modalInventario'));
+
+        // 1. Cargar el inventario en la tabla
+
+async function cargarInventario() {
+    try {
+        const respuesta = await fetch(API_INVENTARIO);
+        const resultado = await respuesta.json();
+
+        const tbody = document.getElementById('tabla-inventario');
+        tbody.innerHTML = '';
+
+        if (resultado.success && resultado.data.length > 0) {
+            listaInventario = resultado.data;
+
+            resultado.data.forEach(item => {
+                let dañados = item.cantidad_total - item.cantidad_buen_estado;
+                let badgeDañados = dañados > 0 
+                    ? `<span class="badge bg-danger">${dañados} reparar/comprar</span>` 
+                    : `<span class="badge bg-light text-muted">Ninguno</span>`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold ps-3">${item.id}</td>
+                        <td>
+                            <i class="fa-solid fa-box text-muted me-2"></i><strong>${item.articulo}</strong>
+                        </td>
+                        <td class="text-center fw-bold text-dark">${item.cantidad_total}</td>
+                        <td class="text-center text-success fw-bold">${item.cantidad_buen_estado}</td>
+                        <td class="text-center">${badgeDañados}</td>
+                        <td><span class="text-secondary small">${item.notes || item.notas || '<i>Sin notas</i>'}</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-dark me-1" onclick="abrirModalEditar(${item.id})">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${item.id}, '${item.articulo}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No hay artículos registrados en la bodega.</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Error al cargar inventario:", error);
+        document.getElementById('tabla-inventario').innerHTML = `
+            <tr><td colspan="7" class="text-center text-danger fw-bold">¡Error de conexión con la bodega de utilería!</td></tr>
+        `;
+    }
+}
+
+        // 2. Modal para Crear
+        function abrirModalCrear() {
+            document.getElementById('form-inventario').reset();
+            document.getElementById('articulo-id').value = '';
+            document.getElementById('modalInventarioLabel').innerText = '📝 Agregar Artículo Nuevo';
+            document.getElementById('btn-guardar').innerText = 'Guardar en Bodega';
+            modalBootstrap.show();
+        }
+
+        // 3. Modal para Editar
+        function abrirModalEditar(id) {
+            const item = listaInventario.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('articulo-id').value = item.id;
+            document.getElementById('articulo').value = item.articulo;
+            document.getElementById('cantidad_total').value = item.cantidad_total;
+            document.getElementById('cantidad_buen_estado').value = item.cantidad_buen_estado;
+            document.getElementById('notas').value = item.notas || '';
+
+            document.getElementById('modalInventarioLabel').innerText = '✏️ Editar ' + item.articulo;
+            document.getElementById('btn-guardar').innerText = 'Actualizar Stock';
+            modalBootstrap.show();
+        }
+
+        // 4. Guardar (POST o PUT)
+        document.getElementById('form-inventario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('articulo-id').value;
+            const total = parseInt(document.getElementById('cantidad_total').value);
+            const buenEstado = parseInt(document.getElementById('cantidad_buen_estado').value);
+
+            // Validación rápida de lógica en el cliente
+            if (buenEstado > total) {
+                Swal.fire({
+                    title: '¡Suave un toque!',
+                    text: 'La cantidad en buen estado no puede ser mayor al total de artículos.',
+                    icon: 'warning',
+                    confirmButtonColor: '#e66e26'
+                });
+                return;
+            }
+
+            const datosArticulo = {
+                articulo: document.getElementById('articulo').value,
+                cantidad_total: total,
+                cantidad_buen_estado: buenEstado,
+                notas: document.getElementById('notas').value
+            };
+
+            const esEditar = id !== '';
+            const url = esEditar ? `${API_INVENTARIO}/${id}` : API_INVENTARIO;
+            const metodo = esEditar ? 'PUT' : 'POST';
+
+            try {
+                const respuesta = await fetch(url, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosArticulo)
+                });
+
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+                    Swal.fire({
+                        title: esEditar ? '¡Bodega Actualizada!' : '¡Artículo Registrado!',
+                        text: esEditar ? 'El stock del equipo ha sido modificado con éxito.' : 'El material ha sido ingresado a la bodega.',
+                        icon: 'success',
+                        confirmButtonColor: '#e66e26'
+                    });
+
+                    modalBootstrap.hide();
+                    cargarInventario();
+                } else {
+                    Swal.fire({ title: 'Error', text: resultado.message, icon: 'error', confirmButtonColor: '#1a1a1a' });
+                }
+            } catch (error) {
+                console.error('Error al guardar artículo:', error);
+                Swal.fire({ title: 'Error', text: 'Problemas de comunicación con el servidor.', icon: 'warning', confirmButtonColor: '#1a1a1a' });
+            }
+        });
+
+        // 5. Eliminar Artículo
+        function confirmarEliminar(id, articulo) {
+            Swal.fire({
+                title: '¿Eliminar de la bodega?',
+                text: `Vas a remover permanentemente "${articulo}" del inventario oficial del club.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const respuesta = await fetch(`${API_INVENTARIO}/${id}`, { method: 'DELETE' });
+                        const resultado = await respuesta.json();
+
+                        if (resultado.success) {
+                            Swal.fire({
+                                title: '¡Dado de baja!',
+                                text: 'El material fue removido del sistema.',
+                                icon: 'success',
+                                confirmButtonColor: '#e66e26'
+                            });
+                            cargarInventario();
+                        }
+                    } catch (error) {
+                        Swal.fire({ title: 'Error', text: 'No se pudo eliminar el artículo.', icon: 'error' });
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarInventario);
+    </script>
+
+     <!--Footer Oficial del Club -->
+    <footer class="bg-dark text-white text-center py-3 mt-5 border-top" style="border-color: #e66e26 !important;">
+        <div class="container">
+            <p class="m-0 small fw-bold">
+                © 2026 INVICTUS <span style="color: #e66e26;">QUEBRADAS</span>. Todos los derechos reservados.
+            </p>
+            <p class="m-0" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);">
+            Desarrollado para el monitoreo deportivo y financiero.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
